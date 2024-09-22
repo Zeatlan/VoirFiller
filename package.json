@@ -1,0 +1,22 @@
+{
+	"name": "voirfiller",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"build": "tsc && npm run copy-files",
+		"copy-files": "copyfiles -u 1 src/**/*.html src/**/*.css public/* dist",
+		"dev": "tsc-watch --onSuccess \"npm run copy-files\"",
+		"clean": "rimraf dist/*"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"description": "",
+	"devDependencies": {
+		"@types/chrome": "^0.0.271",
+		"copyfiles": "^2.4.1",
+		"rimraf": "^6.0.1",
+		"tsc-watch": "^6.2.0",
+		"typescript": "^5.6.2"
+	}
+}
