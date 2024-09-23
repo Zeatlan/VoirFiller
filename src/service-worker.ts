@@ -153,13 +153,13 @@ async function getEpisodesList(tabId: number, url: string) {
 function handleEpisodeAddition(table: cheerio.Element) {
     if(isSeason) {
         const episodeDate = table.children[3].children[0].data;
-        addDateToTable(episodeDate);
+        addDateToTable(episodeDate, table);
     }else {
         allEpisodes.push(table.attribs.class.split(' ')[0]);
     }
 }
 
-function addDateToTable(episodeDate: string) {
+function addDateToTable(episodeDate: string, table: cheerio.Element) {
     if (episodeDate) {
         const formattedEpisodeDate = formatDate(episodeDate);
         
