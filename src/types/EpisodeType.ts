@@ -1,0 +1,1 @@
+export type EpisodeType = 'Manga Canon' | 'Mixed Canon/Filler' | 'Filler';

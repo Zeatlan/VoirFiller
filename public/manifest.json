@@ -1,12 +1,13 @@
 {
     "manifest_version": 3,
-    "name": "Voirfiller",
+    "name": "VoirFiller",
     "version": "1.0",
-    "description": "Détecte si un épisode d'anime est un filler.",
+    "description": "Détecte les épisodes fillers sur VoirAnime",
     "permissions": ["activeTab"],
-    "host_permissions": ["*://*.voiranime.com/*"],
+    "host_permissions": ["https://v5.voiranime.com/*"],
     "background": {
-        "service_worker": "service-worker.js"
+        "service_worker": "service-worker.js",
+        "type": "module"
     },
     "icons": {
         "16": "images/icon16-2.png",
@@ -15,8 +16,8 @@
     },
     "content_scripts": [
         {
-            "matches": ["*://*.voiranime.com/*"],
-            "js": ["content.js"]
+        "matches": ["https://v5.voiranime.com/*"],
+        "js": ["content.js"]
         }
     ]
 }
