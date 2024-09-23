@@ -6,6 +6,7 @@ let animeData: AnimeData | undefined;
 let isEpisodePage = false;
 let startDate: Date, endDate: Date;
 let isSeason = false;
+let allEpisodes: EpisodeType[] = [];
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     const animeUrlEpisode = /https:\/\/v5\.voiranime\.com\/anime\/[^\/]+\/[^\/]+/;
@@ -136,26 +137,34 @@ async function getUniqueEpisode(tabId: number, url: string, episode: string) {
 async function getEpisodesList(tabId: number, url: string) {
     const $ = await requestAnimeFiller(url);
     if(!$) return;
-    let allEpisodes: EpisodeType[] = [];
+    allEpisodes = [];
 
     const tables = $('.EpisodeList').find('tr');
 
     Array.from(tables).forEach(table => {
         if(Object.keys(table.attribs).length > 0) {
-            if(isSeason) {
-                const episodeDate = table.children[3].children[0].data;
-                if (episodeDate) {
-                    const formattedEpisodeDate = formatDate(episodeDate);
-                    
-                    if (startDate && endDate && formattedEpisodeDate >= startDate && formattedEpisodeDate <= endDate) {
-                        allEpisodes.push(table.attribs.class.split(' ')[0]);
-                    }
-                }
-            }else {
-                allEpisodes.push(table.attribs.class.split(' ')[0]);
-            }
+            handleEpisodeAddition(table);
         }
     });
 
     chrome.tabs.sendMessage(tabId, { message: 'Episodes List', types: allEpisodes }).catch(onerror => console.error(onerror));
+}
+
+function handleEpisodeAddition(table: cheerio.Element) {
+    if(isSeason) {
+        const episodeDate = table.children[3].children[0].data;
+        addDateToTable(episodeDate);
+    }else {
+        allEpisodes.push(table.attribs.class.split(' ')[0]);
+    }
+}
+
+function addDateToTable(episodeDate: string) {
+    if (episodeDate) {
+        const formattedEpisodeDate = formatDate(episodeDate);
+        
+        if (startDate && endDate && formattedEpisodeDate >= startDate && formattedEpisodeDate <= endDate) {
+            allEpisodes.push(table.attribs.class.split(' ')[0]);
+        }
+    }
 }
