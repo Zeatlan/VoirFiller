@@ -5,25 +5,19 @@ import { AnimeData, EpisodeType } from './types/index';
 let animeData: AnimeData | undefined;
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-    if(changeInfo.status === 'complete' && tab.url?.includes("https://v5.voiranime.com/anime/")) {
-    
-        animeData = await getAnimeName(tab.url);
+    const animeUrlPattern = /https:\/\/v5\.voiranime\.com\/anime\/[^\/]+\/[^\/]+/;
+    if (changeInfo.status === 'complete' && animeUrlPattern.test(tab.url || '')) {
+        animeData = await getAnimeName(tab.url!);
 
         if (animeData && animeData.animeName !== '' && animeData.animeName !== undefined) {
             const { animeName, episode } = animeData;
             const scrapURL = `https://www.animefillerlist.com/shows/${animeName.split(' ').join('-')}`;
 
-            await getFillerList(tabId, scrapURL, episode);
-        }
-
-        // chrome.tabs.sendMessage(tabId, { message: 'URL mise à jour' })
-        // .then(response => { 
-        //         console.log(response.received);
-        // }).catch(onerror => {
-        //     console.log(onerror)
-        // }); 
+            await getUniqueEpisode(tabId, scrapURL, episode);
+        } 
     }
 });
+
 
 async function getAnimeName(url: string): Promise<AnimeData | undefined> {
     try {
@@ -44,7 +38,7 @@ async function getAnimeName(url: string): Promise<AnimeData | undefined> {
     }
 }
 
-async function getFillerList(tabId: number, url: string, episode: string) {
+async function getUniqueEpisode(tabId: number, url: string, episode: string) {
     try {
         const proxyUrl = `https://cors-anywhere.herokuapp.com/${url}`;  
         const response = await axios.get(proxyUrl);
