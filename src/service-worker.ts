@@ -4,6 +4,8 @@ import { AnimeData, EpisodeType } from './types/index';
 
 let animeData: AnimeData | undefined;
 let isEpisodePage = false;
+let startDate: Date, endDate: Date;
+let isSeason = false;
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     const animeUrlEpisode = /https:\/\/v5\.voiranime\.com\/anime\/[^\/]+\/[^\/]+/;
@@ -17,10 +19,11 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
             isEpisodePage = false;
         }
 
-        animeData = await getAnimeName(tab.url!);
+        animeData = await getAnimeName(tab.url!, tabId);
 
         if (animeData && animeData.animeName !== '' && animeData.animeName !== undefined) {
             const { animeName, episode } = animeData;
+            
             const scrapURL = `https://www.animefillerlist.com/shows/${animeName.split(' ').join('-')}`;
 
             if(animeUrlEpisode.test(tab.url || '') && episode) {
@@ -34,11 +37,39 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     }
 });
 
+function formatDate(dateString: string): Date {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+    return new Date(`${year}-${month}-${day}`);
+}
 
-async function getAnimeName(url: string): Promise<AnimeData | undefined> {
+async function checkSeasons(name: string, tabId: number): Promise<{ startDate: Date, endDate: Date } | null> {
+    if(name.includes('Season')) {
+        const currentTab = (await chrome.tabs.get(tabId)).url;
+        if(currentTab === undefined) return null;
+
+        const response = await axios.get(currentTab);
+        const $ = cheerio.load(response.data);
+
+        const startDate = formatDate($('.post-content_item')[8].children[3].children[0].data);
+        const endDate = formatDate($('.post-content_item')[9].children[3].children[0].data);
+
+        return { startDate, endDate };
+    }
+
+    return null;
+}
+
+async function getAnimeName(url: string, tabId: number): Promise<AnimeData | undefined> {
     try {
         const response = await axios.get(url);
         if(response.status === 200) {
+            startDate = '';
+            endDate = '';
+            isSeason = false;
+
             const html = response.data;
             const $ = cheerio.load(html);
             
@@ -51,8 +82,19 @@ async function getAnimeName(url: string): Promise<AnimeData | undefined> {
                 }
             }
 
+            // On anime episodes listing page
             let englishName = $('.post-content_item')[2].children[3].children[0].data.split('\n')[1].trim();
             englishName = englishName.replace(/[:]/g, '').trim();
+            
+            const dates = await checkSeasons(englishName, tabId);
+
+            if(dates) {
+                isSeason = true;
+                startDate = dates?.startDate;
+                endDate = dates?.endDate;
+
+                englishName = englishName.split('Season')[0].trim();
+            }
             
             if (englishName) {
                 return { animeName: englishName };
@@ -100,10 +142,20 @@ async function getEpisodesList(tabId: number, url: string) {
 
     Array.from(tables).forEach(table => {
         if(Object.keys(table.attribs).length > 0) {
-            allEpisodes.push(table.attribs.class.split(' ')[0]);
+            if(isSeason) {
+                const episodeDate = table.children[3].children[0].data;
+                if (episodeDate) {
+                    const formattedEpisodeDate = formatDate(episodeDate);
+                    
+                    if (startDate && endDate && formattedEpisodeDate >= startDate && formattedEpisodeDate <= endDate) {
+                        allEpisodes.push(table.attribs.class.split(' ')[0]);
+                    }
+                }
+            }else {
+                allEpisodes.push(table.attribs.class.split(' ')[0]);
+            }
         }
     });
-    console.log(tables);
 
     chrome.tabs.sendMessage(tabId, { message: 'Episodes List', types: allEpisodes }).catch(onerror => console.error(onerror));
 }
