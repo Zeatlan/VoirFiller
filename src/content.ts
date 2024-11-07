@@ -79,9 +79,7 @@ function injectFillerList(types: EpisodeType[]) {
         document.head.appendChild(afterStyle);
 
         const textChild = ep.children[0] as HTMLElement;
-        if (!textChild) return;
-
-        const textSplit = textChild.textContent.split(" ");
+        const textSplit = textChild.textContent!.split(" ");
 
         if (textSplit.length < 2) return;
 
