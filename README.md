@@ -4,13 +4,13 @@
 
 ## Description
 
-VoirFiller est une extension Chrome conçue pour détecter si l'épisode que vous regardez sur le site web "[voiranime](https://v5.voiranime.com)" est un filler ou non. Cette extension est développée en TypeScript pour garantir une meilleure maintenabilité et robustesse du code.
+VoirFiller est une extension Chrome conçue pour détecter si l'épisode que vous regardez sur le site web "[voiranime](https://v3.voiranime.ws)" est un filler ou non. Cette extension est développée en TypeScript pour garantir une meilleure maintenabilité et robustesse du code.
 
 ## Fonctionnalités
 
-- Détection automatique des épisodes fillers sur "[voiranime](https://v5.voiranime.com)".
-- Indicateur visuel pour signaler les épisodes fillers.
-- Interface utilisateur intuitive et facile à utiliser.
+-   Détection automatique des épisodes fillers sur "[voiranime](https://v3.voiranime.ws)".
+-   Indicateur visuel pour signaler les épisodes fillers.
+-   Interface utilisateur intuitive et facile à utiliser.
 
 ## Installation
 
@@ -49,4 +49,3 @@ Pour contribuer au développement de cette extension :
     ```bash
     npm run dev
     ```
-
