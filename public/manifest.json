@@ -4,7 +4,7 @@
     "version": "1.0",
     "description": "Détecte les épisodes fillers sur VoirAnime",
     "permissions": ["activeTab"],
-    "host_permissions": ["https://v5.voiranime.com/*"],
+    "host_permissions": ["https://v3.voiranime.ws/*"],
     "background": {
         "service_worker": "service-worker.js",
         "type": "module"
@@ -16,8 +16,8 @@
     },
     "content_scripts": [
         {
-        "matches": ["https://v5.voiranime.com/*"],
-        "js": ["content.js"]
+            "matches": ["https://v3.voiranime.ws/*"],
+            "js": ["content.js"]
         }
     ]
 }

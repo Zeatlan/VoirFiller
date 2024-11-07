@@ -79,7 +79,12 @@ function injectFillerList(types: EpisodeType[]) {
         document.head.appendChild(afterStyle);
 
         const textChild = ep.children[0] as HTMLElement;
+        if (!textChild) return;
+
         const textSplit = textChild.textContent.split(" ");
+
+        if (textSplit.length < 2) return;
+
         const episodeNumber = textSplit[textSplit.length - 2]
             .replace(/^0+/, "")
             .split("x")[0];

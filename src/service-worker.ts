@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import axios from "axios";
 import { AnimeData, EpisodeType } from "./types/index";
+import getChildData from "./utils";
 
 let animeData: AnimeData | undefined;
 let isEpisodePage = false;
@@ -26,8 +27,6 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         } else {
             isEpisodePage = false;
         }
-
-        console.log(isEpisodePage);
 
         animeData = await getAnimeName(tab.url!, tabId);
 
@@ -73,10 +72,16 @@ async function checkSeasons(
         const $ = cheerio.load(response.data);
 
         const startDate = formatDate(
-            $(".post-content_item")[8].children[3].children[0].data
+            getChildData(
+                $(".post-content_item")[8] as cheerio.TagElement,
+                [3, 0]
+            )
         );
         const endDate = formatDate(
-            $(".post-content_item")[9].children[3].children[0].data
+            getChildData(
+                $(".post-content_item")[9] as cheerio.TagElement,
+                [3, 0]
+            )
         );
 
         return { startDate, endDate };
@@ -92,8 +97,8 @@ async function getAnimeName(
     try {
         const response = await axios.get(url);
         if (response.status === 200) {
-            startDate = "";
-            endDate = "";
+            startDate = new Date();
+            endDate = new Date();
             isSeason = false;
 
             const html = response.data;
@@ -119,9 +124,14 @@ async function getAnimeName(
             }
 
             // On anime episodes listing page
-            let englishName = $(".post-content_item")[2]
-                .children[3].children[0].data.split("\n")[1]
-                .trim();
+            let englishName =
+                (
+                    ($(".post-content_item")[2] as cheerio.TagElement)
+                        .children[3] as cheerio.TagElement
+                ).children[0]?.data
+                    ?.split("\n")[1]
+                    ?.trim() || "";
+
             englishName = englishName.replace(/[:]/g, "").trim();
 
             const dates = await checkSeasons(englishName, tabId);
@@ -166,8 +176,11 @@ async function getUniqueEpisode(tabId: number, url: string, episode: string) {
 
     const table = $(".EpisodeList").find(
         `tr#eps-${episode.replace(/^0+/, "").split("x")[0]}`
-    )[0];
-    const episodeType: EpisodeType = table.attribs.class.split(" ")[0];
+    )[0] as cheerio.TagElement;
+
+    const episodeType: EpisodeType = table.attribs.class.split(
+        " "
+    )[0] as EpisodeType;
 
     if (episodeType) {
         chrome.tabs
@@ -184,8 +197,10 @@ async function getEpisodesList(tabId: number, url: string) {
     const tables = $(".EpisodeList").find("tr");
 
     Array.from(tables).forEach((table) => {
-        if (Object.keys(table.attribs).length > 0) {
-            handleEpisodeAddition(table);
+        const tagElement = table as cheerio.TagElement;
+
+        if (Object.keys(tagElement.attribs).length > 0) {
+            handleEpisodeAddition(tagElement);
         }
     });
 
@@ -194,16 +209,19 @@ async function getEpisodesList(tabId: number, url: string) {
         .catch((onerror) => console.error(onerror));
 }
 
-function handleEpisodeAddition(table: cheerio.Element) {
+function handleEpisodeAddition(table: cheerio.TagElement) {
     if (isSeason) {
-        const episodeDate = table.children[3].children[0].data;
-        addDateToTable(episodeDate, table);
+        const ed = table.children[3] as cheerio.TagElement;
+        const episodeDate = ed.children[0].data;
+        if (episodeDate) {
+            addDateToTable(episodeDate, table);
+        }
     } else {
-        allEpisodes.push(table.attribs.class.split(" ")[0]);
+        allEpisodes.push(table.attribs.class.split(" ")[0] as EpisodeType);
     }
 }
 
-function addDateToTable(episodeDate: string, table: cheerio.Element) {
+function addDateToTable(episodeDate: string, table: cheerio.TagElement) {
     if (episodeDate) {
         const formattedEpisodeDate = formatDate(episodeDate);
 
@@ -213,7 +231,7 @@ function addDateToTable(episodeDate: string, table: cheerio.Element) {
             formattedEpisodeDate >= startDate &&
             formattedEpisodeDate <= endDate
         ) {
-            allEpisodes.push(table.attribs.class.split(" ")[0]);
+            allEpisodes.push(table.attribs.class.split(" ")[0] as EpisodeType);
         }
     }
 }
