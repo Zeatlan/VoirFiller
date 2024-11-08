@@ -2,9 +2,12 @@
 
 ![VoirFiller Logo](public/images/icon128.png)
 
+![Preview List](public/repo/preview-list.png)
+![Preview Episode](public/repo/preview-episode.png)
+
 ## Description
 
-VoirFiller est une extension Chrome conçue pour détecter si l'épisode que vous regardez sur le site web "[voiranime](https://v3.voiranime.ws)" est un filler ou non. Cette extension est développée en TypeScript pour garantir une meilleure maintenabilité et robustesse du code.
+VoirFiller est une extension Chrome conçue pour détecter si l'épisode que vous regardez sur le site web "[voiranime](https://v3.voiranime.ws)" est un filler ou non. Cette extension est développée avec TypeScript pour garantir une meilleure maintenabilité et robustesse du code.
 
 ## Fonctionnalités
 
@@ -29,6 +32,7 @@ VoirFiller est une extension Chrome conçue pour détecter si l'épisode que vou
     npm run build
     ```
 6. Cliquez sur "Charger l'extension non empaquetée" et sélectionnez le répertoire `dist` du projet.
+7. (Provisoire) Le temps que je créer une vraie plateforme pour cette extension afin d'effectuer des requêtes CORS, merci de se rendre sur [cors-anywhere](https://cors-anywhere.herokuapp.com/) et cliquer sur le bouton "Use CORS proxy to bypass the same-origin policy" pour que les requêtes CORS fonctionnent correctement. (A la publication du mode, cette fonctionnalité sera supprimée.)
 
 ## Utilisation
 
