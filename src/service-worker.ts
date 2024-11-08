@@ -12,12 +12,8 @@ let allEpisodes: EpisodeType[] = [];
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     const animeUrlEpisode =
         /https:\/\/v3\.voiranime\.ws\/anime\/[^\/]+\/[^\/]+/;
-    const animeUrl = /https:\/\/v3\.voiranime\.ws\/anime\/[^\/]+\/$/;
+    const animeUrl = /https:\/\/v3\.voiranime\.ws\/anime\/[^\/]+\/?$/;
 
-    console.log(changeInfo.status);
-    console.log(animeUrl.test(tab.url || ""));
-    console.log(animeUrlEpisode.test(tab.url || ""));
-    console.log(tab);
     if (
         changeInfo.status === "complete" &&
         (animeUrl.test(tab.url || "") || animeUrlEpisode.test(tab.url || ""))
@@ -134,6 +130,8 @@ async function getAnimeName(
 
             englishName = englishName.replace(/[:]/g, "").trim();
 
+            console.log(englishName);
+
             const dates = await checkSeasons(englishName, tabId);
 
             if (dates) {
@@ -155,7 +153,6 @@ async function getAnimeName(
 }
 
 async function requestAnimeFiller(url: string) {
-    console.log(url);
     try {
         const proxyUrl = `https://cors-anywhere.herokuapp.com/${url}`;
         const response = await axios.get(proxyUrl);
