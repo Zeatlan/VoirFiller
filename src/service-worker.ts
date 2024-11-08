@@ -155,13 +155,35 @@ async function getUniqueEpisode(tabId: number, url: string, episode: string) {
     const $ = await requestAnimeFiller(url);
     if (!$) return;
 
-    const table = $(".EpisodeList").find(
-        `tr#eps-${episode.replace(/^0+/, "").split("x")[0]}`
-    )[0] as cheerio.TagElement;
+    const mixedEpisodes = episode.split("-");
+    let episodeType: EpisodeType = "manga_canon";
 
-    const episodeType: EpisodeType = table.attribs.class.split(
-        " "
-    )[0] as EpisodeType;
+    if (mixedEpisodes.length > 1) {
+        let mixedTypes: EpisodeType[] = [];
+
+        mixedEpisodes.forEach((ep) => {
+            mixedTypes.push(findUniqueEpisodeType($, ep));
+        });
+
+        if (
+            (mixedTypes.includes("filler") ||
+                mixedTypes.includes("mixed_canon/filler")) &&
+            (mixedTypes.includes("anime_canon") ||
+                mixedTypes.includes("manga_canon"))
+        ) {
+            episodeType = "mixed_canon/filler";
+        }
+
+        if (
+            !mixedTypes.includes("anime_canon") &&
+            !mixedTypes.includes("manga_canon") &&
+            mixedTypes.includes("filler")
+        ) {
+            episodeType = "filler";
+        }
+    } else {
+        episodeType = findUniqueEpisodeType($, episode);
+    }
 
     if (episodeType) {
         chrome.tabs
@@ -216,4 +238,12 @@ function addDateToTable(episodeDate: string, table: cheerio.TagElement) {
             allEpisodes.push(table.attribs.class.split(" ")[0] as EpisodeType);
         }
     }
+}
+
+function findUniqueEpisodeType($: cheerio.Root, episode: string): EpisodeType {
+    const table = $(".EpisodeList").find(
+        `tr#eps-${episode.replace(/^0+/, "").split("x")[0]}`
+    )[0] as cheerio.TagElement;
+
+    return table.attribs.class.split(" ")[0] as EpisodeType;
 }
