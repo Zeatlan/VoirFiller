@@ -96,30 +96,22 @@ async function getAnimeName(
             startDate = new Date();
             endDate = new Date();
             isSeason = false;
+            let episode = "";
 
             const html = response.data;
             const $ = cheerio.load(html);
 
             if (isEpisodePage) {
-                const animeName = $(".breadcrumb")
-                    .children()
-                    .last()
-                    .text()
-                    .split("-")[0]
-                    .trim();
-                const episode = $(".breadcrumb")
-                    .children()
-                    .last()
-                    .text()
-                    .split("-")[2]
-                    .trim();
-
-                if (animeName) {
-                    return { animeName, episode };
-                }
+                episode = $(".list-episodes select option:selected")
+                    .first()
+                    .text();
             }
             // On anime episodes listing page
             let englishName = $("h1.text-2xl").first().text();
+
+            if (!englishName) {
+                englishName = $("h2.card-title a").first().text();
+            }
 
             // Remove ":" from the name. (Example: Naruto: Shippuden)
             englishName = englishName.replace(/[:]/g, "").trim();
@@ -135,7 +127,7 @@ async function getAnimeName(
             }
 
             if (englishName) {
-                return { animeName: englishName };
+                return { animeName: englishName, episode };
             }
         }
     } catch (error) {
@@ -179,6 +171,7 @@ async function getUniqueEpisode(tabId: number, url: string, episode: string) {
 }
 
 async function getEpisodesList(tabId: number, url: string) {
+    console.log("GET EPISODES LIST");
     const $ = await requestAnimeFiller(url);
     if (!$) return;
     allEpisodes = [];

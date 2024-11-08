@@ -13,10 +13,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 function injectFillerInfo(episodeType: EpisodeType) {
-    const div = document.querySelector(".c-blog-post");
+    const div = document.querySelector("main .player");
 
     const infoElement = document.createElement("div");
-    let bgColor = "";
+    let bgColor: BgColorKey = "#51d88a";
 
     if (episodeType === "filler") {
         infoElement.textContent =
