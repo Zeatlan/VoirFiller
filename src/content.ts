@@ -88,10 +88,10 @@ function injectFillerList(types: EpisodeType[]) {
         }
 
         ep.style.cssText = `
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
             align-items: center;
-            padding: 1rem 1rem;
+            padding: 1rem;
             background-color: ${bgListColor[bgColor]};
         `;
 
@@ -105,6 +105,6 @@ function injectFillerList(types: EpisodeType[]) {
             font-family: 'Montserrat', sans-serif;
         `;
 
-        ep?.insertBefore(info, ep.firstChild);
+        ep?.insertBefore(info, ep.lastChild);
     });
 }
