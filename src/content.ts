@@ -43,7 +43,13 @@ function injectFillerInfo(episodeType: EpisodeType) {
         font-family: 'Montserrat', sans-serif;
     `;
 
-    div?.appendChild(infoElement);
+    if (div) {
+        div.appendChild(infoElement);
+    } else {
+        console.error(
+            "VOIRFILLER:: Could not find the player div on episode page."
+        );
+    }
 }
 
 function injectFillerList(types: EpisodeType[]) {
@@ -105,6 +111,10 @@ function injectFillerList(types: EpisodeType[]) {
             font-family: 'Montserrat', sans-serif;
         `;
 
-        ep?.insertBefore(info, ep.lastChild);
+        if (ep) {
+            ep.insertBefore(info, ep.lastChild);
+        } else {
+            console.error("VOIRFILLER:: Could not find the episodes list.");
+        }
     });
 }
