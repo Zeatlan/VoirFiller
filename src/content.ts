@@ -1,4 +1,4 @@
-import { EpisodeType } from "./types/index";
+import { BgColorKey, EpisodeType } from "./types/index";
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.message === "Episode Type") {
@@ -53,13 +53,13 @@ function injectFillerList(types: EpisodeType[]) {
 
     episodes.forEach((ep) => {
         const info = document.createElement("div");
-        let bgColor = "";
+        let bgColor: BgColorKey = "#51d88a";
 
-        ep.style.cssText = `
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        `;
+        let bgListColor: Record<BgColorKey, string> = {
+            "#d85151": "rgba(216, 81, 81, 0.2)",
+            "#51d88a": "rgba(81, 216, 138, 0.2)",
+            "#d8b751": "rgba(216, 183, 81, 0.2)",
+        };
 
         const textChild = ep.children[0] as HTMLElement;
         const textSplit = textChild.textContent!.split(" ");
@@ -86,6 +86,14 @@ function injectFillerList(types: EpisodeType[]) {
             info.textContent = "Canon/Filler";
             bgColor = "#d8b751";
         }
+
+        ep.style.cssText = `
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1rem;
+            background-color: ${bgListColor[bgColor]};
+        `;
 
         info.style.cssText = `
             background-color: ${bgColor};
