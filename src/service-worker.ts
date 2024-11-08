@@ -118,19 +118,11 @@ async function getAnimeName(
                     return { animeName, episode };
                 }
             }
-
             // On anime episodes listing page
-            let englishName =
-                (
-                    ($(".post-content_item")[2] as cheerio.TagElement)
-                        .children[3] as cheerio.TagElement
-                ).children[0]?.data
-                    ?.split("\n")[1]
-                    ?.trim() || "";
+            let englishName = $("h1.text-2xl").first().text();
 
+            // Remove ":" from the name. (Example: Naruto: Shippuden)
             englishName = englishName.replace(/[:]/g, "").trim();
-
-            console.log(englishName);
 
             const dates = await checkSeasons(englishName, tabId);
 

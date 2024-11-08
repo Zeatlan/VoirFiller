@@ -48,7 +48,7 @@ function injectFillerInfo(episodeType: EpisodeType) {
 
 function injectFillerList(types: EpisodeType[]) {
     const episodes: HTMLElement[] = Array.from(
-        document.querySelectorAll(".list .separator li")
+        document.querySelectorAll(".list li")
     ).reverse() as HTMLElement[];
 
     episodes.forEach((ep) => {
