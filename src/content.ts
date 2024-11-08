@@ -61,23 +61,6 @@ function injectFillerList(types: EpisodeType[]) {
             align-items: center;
         `;
 
-        const afterStyle = document.createElement("style");
-        afterStyle.textContent = `
-            .wp-manga-chapter::after {
-                content: "";
-                position: absolute;
-                display: block;
-                height: 1px;
-                background-color: #ebebeb;
-                width: 100%;
-                opacity: 1;
-                visibility: visible;
-                left: 0;
-                bottom: 0;
-            }
-        `;
-        document.head.appendChild(afterStyle);
-
         const textChild = ep.children[0] as HTMLElement;
         const textSplit = textChild.textContent!.split(" ");
 
