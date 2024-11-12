@@ -32,7 +32,7 @@ VoirFiller est une extension Chrome conçue pour détecter si l'épisode que vou
     npm run build
     ```
 6. Cliquez sur "Charger l'extension non empaquetée" et sélectionnez le répertoire `dist` du projet.
-7. (Provisoire) Le temps que je créer une vraie plateforme pour cette extension afin d'effectuer des requêtes CORS, merci de se rendre sur [cors-anywhere](https://cors-anywhere.herokuapp.com/) et cliquer sur le bouton "Use CORS proxy to bypass the same-origin policy" pour que les requêtes CORS fonctionnent correctement. (A la publication du mode, cette fonctionnalité sera supprimée.)
+7. (Provisoire) Le temps que je créer une vraie plateforme pour cette extension afin d'effectuer des requêtes CORS, merci de se rendre sur [cors-anywhere](https://cors-anywhere.herokuapp.com/) et cliquer sur le bouton "Request temporary access to the demo server" pour que les requêtes CORS fonctionnent correctement. (A la publication du mode, cette fonctionnalité sera supprimée.)
 
 ## Utilisation
 
